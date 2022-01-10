@@ -1,0 +1,14 @@
+{
+  "name": "neoshift-contract",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/fappablo/neoshift-contract.git",
+  "author": "Fappablo <thefappachannelita@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.4.1",
+    "@truffle/hdwallet-provider": "^2.0.0",
+    "truffle": "^5.4.27",
+    "truffle-plugin-verify": "^0.5.20"
+  }
+}
