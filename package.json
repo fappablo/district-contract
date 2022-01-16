@@ -1,9 +1,9 @@
 {
-  "name": "neoshift-contract",
+  "name": "district-contract",
   "version": "1.0.0",
   "main": "index.js",
-  "repository": "https://github.com/fappablo/neoshift-contract.git",
-  "author": "Fappablo <thefappachannelita@gmail.com>",
+  "repository": "https://github.com/fappablo/district-contract.git",
+  "author": "Fappablo <dev.pablo.fiz@gmail.com>",
   "license": "MIT",
   "dependencies": {
     "@openzeppelin/contracts": "^4.4.1",

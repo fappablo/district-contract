@@ -124,7 +124,7 @@
      'truffle-plugin-verify'
    ],
    api_keys: {
-     etherscan: '91CIYUTBKXMFMZFQ8G6CK4H44EIBYYRVCD'
+     etherscan: 'yourkey' //add your own etherscan key here for contract source code verifing
    },
  
    // Truffle DB is currently disabled by default; to enable it, change enabled: false to enabled: true

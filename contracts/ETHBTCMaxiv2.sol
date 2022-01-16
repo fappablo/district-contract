@@ -6,13 +6,14 @@ pragma solidity ^0.8.7;
  *
  *   =0o0=o0o=0o0=o0o=0o0=o0o=0o0=o0o=0o0=o0o=0o0=o0o=0o0=o0o=0o0=
  *   =0o0=o0o=0o0=o0o=0o0=o0o=0o0=o0o=0o0=o0o=0o0=o0o=0o0=o0o=0o0=
- *    _____ _____ _   _ ______ _______   _____  ___           _ 
- *   |  ___|_   _| | | || ___ \_   _\ \ / /|  \/  |          (_)
- *   | |__   | | | |_| || |_/ / | |  \ V / | .  . | __ ___  ___ 
- *   |  __|  | | |  _  || ___ \ | |  /   \ | |\/| |/ _` \ \/ / |
- *   | |___  | | | | | || |_/ / | | / /^\ \| |  | | (_| |>  <| |
- *   \____/  \_/ \_| |_/\____/  \_/ \/   \/\_|  |_/\__,_/_/\_\_|                                                         
- *
+ *   
+ *    _____ _____ _   _______ _____ ________  ___ ___ __   _______ 
+ *   |  ___|_   _| | | | ___ |_   _/  __ |  \/  |/ _ \\ \ / |_   _|
+ *   | |__   | | | |_| | |_/ / | | | /  \| .  . / /_\ \\ V /  | |  
+ *   |  __|  | | |  _  | ___ \ | | | |   | |\/| |  _  |/   \  | |  
+ *   | |___  | | | | | | |_/ / | | | \__/| |  | | | | / /^\ \_| |_ 
+ *   \____/  \_/ \_| |_\____/  \_/  \____\_|  |_\_| |_\/   \/\___/                                                                                                                          
+ *                                                                
  *   =0o0=o0o=0o0=o0o=0o0=o0o=0o0=o0o=0o0=o0o=0o0=o0o=0o0=o0o=0o0=
  *   =0o0=o0o=0o0=o0o=0o0=o0o=0o0=o0o=0o0=o0o=0o0=o0o=0o0=o0o=0o0=
  *
@@ -24,7 +25,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./ERC721Enumerable.sol";
 
-contract ETHBTCMaxi is ERC721Enumerable, Ownable {
+contract ETHBTCMaxiv2 is ERC721Enumerable, Ownable {
     string  public              baseURI;
     
     address public              proxyRegistryAddress;
@@ -32,21 +33,19 @@ contract ETHBTCMaxi is ERC721Enumerable, Ownable {
     address public              xbtcAddress;
 
     uint256 public constant     MAX_SUPPLY          = 100;
-    uint256 public constant     BURN_REWARD    = 210000000000;
-    uint256 public constant     MAX_PER_TX          = 10;
-    uint256 public constant     RESERVES            = 5;
-    uint256 public constant     priceInWei          = 0.065 ether;
+    uint256 public constant     MINT_REWARD         = 210000000000; //0xbtc reward (divide by 10^8 to get units)
+    uint256 public constant     MAX_PER_TX          = 10; //max number of tokens purchasable in 1 txn
+    uint256 public constant     RESERVES            = 5; //tokens reserved for the team and free to mint (wont get mint reward)
+    uint256 public constant     priceInWei          = 2 ether; //price
 
     constructor(
-        string memory _baseURI, 
-        address _proxyRegistryAddress, 
+        string memory _baseURI,
         address _devWallet,
         address _xbtcAddress
     )
         ERC721("ETHBTCMaxi", "ETHBTCMaxi")
     {
         baseURI = _baseURI;
-        proxyRegistryAddress = _proxyRegistryAddress;
         devWallet = _devWallet;
         xbtcAddress = _xbtcAddress;
     }
@@ -74,14 +73,13 @@ contract ETHBTCMaxi is ERC721Enumerable, Ownable {
 
         for(uint i; i < count; i++) { 
             _mint(_msgSender(), totalSupply + i);
+            IERC20(xbtcAddress).transfer(_msgSender(), MINT_REWARD);
         }
     }
 
     function burn(uint256 tokenId) public { 
         require(_isApprovedOrOwner(_msgSender(), tokenId), "Not approved to burn.");
-        _burn(tokenId);
-        require(_owners[tokenId] == address(0));
-        IERC20(xbtcAddress).transfer(_msgSender(), BURN_REWARD);
+        _burn(tokenId);    
     }
 
     function withdraw() public  {
@@ -121,19 +119,8 @@ contract ETHBTCMaxi is ERC721Enumerable, Ownable {
         return true;
     }
 
-    function isApprovedForAll(address _owner, address operator) public view override returns (bool) {
-        OpenSeaProxyRegistry proxyRegistry = OpenSeaProxyRegistry(proxyRegistryAddress);
-        if (address(proxyRegistry.proxies(_owner)) == operator) return true;
-        return super.isApprovedForAll(_owner, operator);
-    }
-
     function _mint(address to, uint256 tokenId) internal virtual override {
         _owners.push(to);
         emit Transfer(address(0), to, tokenId);
     }
-}
-
-contract OwnableDelegateProxy { }
-contract OpenSeaProxyRegistry {
-    mapping(address => OwnableDelegateProxy) public proxies;
 }
